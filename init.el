@@ -18,6 +18,7 @@
 (setq tab-width 4)
 (setq c-basic-offset 4)
 (setq indent-tabs-mode nil)
+(setq-default indent-tabs-mode nil)
 
 ; font - set default font to droid sans mono
 (add-to-list 'default-frame-alist '(font . "Droid Sans Mono-11"))
