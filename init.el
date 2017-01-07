@@ -21,7 +21,7 @@
 (setq-default indent-tabs-mode nil)
 
 ; font - set default font to droid sans mono
-(add-to-list 'default-frame-alist '(font . "Droid Sans Mono-11"))
+(add-to-list 'default-frame-alist '(font . "Noto Mono-11"))
 
 ; make zenburn the default: 
 (load-theme 'zenburn)
