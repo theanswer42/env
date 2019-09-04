@@ -3,9 +3,12 @@
 
 ; melpa
 (require 'package)
-(package-initialize)
 (add-to-list 'package-archives
 	     '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(add-to-list 'package-archives 
+             '("marmalade" . "http://marmalade-repo.org/packages/"))
+
+(package-initialize)
 
 ; turn off the menubar and toolbar
 (menu-bar-mode -1)
@@ -20,8 +23,10 @@
 (setq indent-tabs-mode nil)
 (setq-default indent-tabs-mode nil)
 
+(setq js-indent-level 2)
+
 ; font - set default font to droid sans mono
-(add-to-list 'default-frame-alist '(font . "Noto Mono-11"))
+(add-to-list 'default-frame-alist '(font . "Noto Mono-12"))
 
 ; make zenburn the default: 
 (load-theme 'zenburn)
@@ -79,6 +84,7 @@
 (add-to-list 'auto-mode-alist '("Gemfile" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Capfile" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Vagrantfile" . ruby-mode))
+(setq ruby-insert-encoding-magic-comment nil)
 
 ; rvm - not sure what this is for
 ; (rvm-use-default)
@@ -98,3 +104,9 @@
 ; make org-mode the default text mode
 (setq default-major-mode 'org-mode)
 
+; magit - enable global magit file mode
+(global-magit-file-mode)
+
+; rust and toml
+(require 'toml-mode)
+(require 'rust-mode)
