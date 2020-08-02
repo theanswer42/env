@@ -1,27 +1,18 @@
-What is this?
-=============
+# Emacs setup
+This document needs a LOT of work. 
 
-I have set up my environment and lost it too many times. This time, I want to 
-put some time into it, set it up right, and make sure I always have the same
-environment everywhere. 
+## Resources
 
-Resources
-=========
 
 * [emacs prelude](https://github.com/bbatsov/prelude)
 * [color themes in emacs](http://batsov.com/articles/2012/02/19/color-theming-in-emacs-reloaded/)
 
-Running log of things:
-======================
-
-5/17
-====
+## Running log of things:
 
 Basic stuff done. Color theme is next. This is leading to more interesting 
 things. 
 
-Zenburn
-=======
+## Zenburn
 
 Looking for a good color theme, ran across zenburn. 
 [zenburn](http://slinky.imukuppi.org/zenburnpage/)
@@ -32,16 +23,14 @@ I will have to look into getting it for netbeans at work.
 This is the port for emacs:
 [zenburn-emacs](https://github.com/bbatsov/zenburn-emacs)
 
-MELPA
-=====
+## MELPA
 
 I see this mentioned multiple times, along with **Marmalade**. Package managers
 for emacs?
 [MELPA](http://melpa.milkbox.net/#/getting-started)
 
 
-GNU ELPA
-========
+## GNU ELPA
 
 What is this? [ELPA](http://elpa.gnu.org/)
 
@@ -67,13 +56,11 @@ worked.
 (load custom-file)
 `
 
-More emacs customizations
-=========================
+## More emacs customizations
 [Aaron Bedra's emacs.d](http://www.aaronbedra.com/emacs.d/)
 
 
-org-mode
-========
+## org-mode
 
 What is org mode? Can it be useful to me?
 [org-mode features](http://orgmode.org/features.html)
@@ -83,14 +70,12 @@ I'm going to try this out right now.
 org-mode is sounding more and more like something really awesome. 
 org-babel is something to look at too. 
 
-markdown-mode
-=============
+## markdown-mode
 
 Looks like this could be very useful to quickly write documents.
 [markdown](http://daringfireball.net/projects/markdown/)
 
-Emacs starter kit
-=================
+## Emacs starter kit
 
 Aaron mentions using the [emacs starter kit](http://eschulte.github.io/emacs-starter-kit/).
 [The github page](https://github.com/eschulte/emacs24-starter-kit/)
