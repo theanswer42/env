@@ -1,12 +1,12 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+
 ; melpa
 (require 'package)
 (add-to-list 'package-archives
-	     '("melpa" . "http://melpa.milkbox.net/packages/") t)
-(add-to-list 'package-archives 
-             '("marmalade" . "http://marmalade-repo.org/packages/"))
+	     '("melpa" . "https://melpa.org/packages/") t)
 
 (package-initialize)
 
@@ -24,17 +24,18 @@
 (setq-default indent-tabs-mode nil)
 
 (setq js-indent-level 2)
+(setq typescript-indent-level 2)
 
 ; font - set default font to droid sans mono
 (add-to-list 'default-frame-alist '(font . "Noto Mono-12"))
 
-; make zenburn the default: 
+; make zenburn the default:
 (load-theme 'zenburn)
 
 ; indicate empty lines
 (setq-default indicate-empty-lines t)
 
-; Some shortcuts: 
+; Some shortcuts:
 (global-set-key (kbd "RET") 'newline-and-indent)
 
 ; echo's and bells
@@ -110,3 +111,30 @@
 ; rust and toml
 (require 'toml-mode)
 (require 'rust-mode)
+
+;; python - pyenv
+(require 'pyenv-mode)
+
+; golang customizations
+(add-hook 'before-save-hook 'gofmt-before-save)
+
+(setq lsp-keymap-prefix "C-l")
+
+(require 'lsp-mode)
+(add-hook 'go-mode-hook #'lsp)
+(add-hook 'python-mode-hook #'lsp)
+
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.jinja\\'" . web-mode))
+
+
+(defun set-web-mode-indents ()
+  "Hooks for Web mode."
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-code-indent-offset 2)
+)
+(add-hook 'web-mode-hook  'set-web-mode-indents)
+
+(global-flycheck-mode)
