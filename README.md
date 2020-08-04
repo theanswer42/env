@@ -28,3 +28,10 @@ cp autostart-scripts/* ~/.config/autostart-scripts
 ## kde shortcuts
 I'm not sure if I can copy the `khotkeysrc` directly into ~/.config/. It should 
 be possible to import shortcuts from `theanswer42.khotkeys`
+
+## Tools
+### fzf
+see https://github.com/junegunn/fzf
+
+Looks to be very useful! Only used it once, but already loving the history
+search with ctrl-R.

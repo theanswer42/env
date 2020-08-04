@@ -122,6 +122,12 @@ alias pipy='pipenv run python'
 HISTSIZE=1000
 HISTFILESIZE=2000
 
+# fzf
+# Instructions in
+# /usr/share/doc/fzf/README.Debian
+source /usr/share/doc/fzf/examples/key-bindings.zsh
+source /usr/share/doc/fzf/examples/completion.zsh
+
 # TODO: chroot
 
 # pyenv
