@@ -4,7 +4,13 @@ Currently trying out zsh. There are some adjustments, but I might stick with it.
 
 Installation is pretty straightforward from: https://github.com/ohmyzsh/ohmyzsh
 
-See .zshrc.
+```
+cp .zshrc ~/
+cp .zprofile ~/
+```
+I like the idea of keeping a common `.profile` that gets sourced 
+by `.zprofile`.
+
 ## powerline
 ```
 sudo apt install powerline
