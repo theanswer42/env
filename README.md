@@ -13,3 +13,9 @@ See powerline config in the powerline directory.
 
 ## emacs
 See [emacs.readme.md](emacs.readme.md)
+
+## kde autostart
+```
+mkdir -p ~/.config/autostart-scripts
+cp autostart-scripts/* ~/.config/autostart-scripts
+```
