@@ -19,3 +19,6 @@ See [emacs.readme.md](emacs.readme.md)
 mkdir -p ~/.config/autostart-scripts
 cp autostart-scripts/* ~/.config/autostart-scripts
 ```
+## kde shortcuts
+I'm not sure if I can copy the `khotkeysrc` directly into ~/.config/. It should 
+be possible to import shortcuts from `theanswer42.khotkeys`
