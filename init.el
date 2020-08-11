@@ -2,7 +2,9 @@
 (load custom-file)
 
 ;;; melpa setup
-(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+;; At some point, I had to do this to fix an error while
+;; fetching packages. I'm not sure if I need this now.
+;; (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 (require 'package)
 (add-to-list 'package-archives
 	     '("melpa" . "https://melpa.org/packages/") t)
@@ -29,6 +31,11 @@
 ;; indents
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 8)
+
+;;; text modes
+(add-hook 'markdown-mode-hook 'auto-fill-mode)
+(add-hook 'org-mode-hook 'auto-fill-mode)
+(add-hook 'text-mode-hook 'auto-fill-mode)
 
 ;;; programming
 ;; javascript, typescript
@@ -92,8 +99,16 @@
 ;; flycheck
 (global-flycheck-mode)
 
-
-
+;; yamllint does not get selected as the default
+;; linter for yaml-mode. Lets make it so.
+(defun ta42-yaml-mode-linter-hook ()
+  "Add yamllint as a linter for yaml-mode."
+  (flycheck-select-checker 'yaml-yamllint)
+  )
+(add-hook 'yaml-mode-hook 'ta42-yaml-mode-linter-hook)
+;; Taken from prelude --v
+(add-hook 'yaml-mode-hook 'whitespace-mode)
+(add-hook 'yaml-mode-hook 'subword-mode)
 
 ; font - set default font to droid sans mono
 (add-to-list 'default-frame-alist '(font . "Noto Mono-12"))
