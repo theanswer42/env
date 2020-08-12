@@ -32,10 +32,47 @@
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 8)
 
+;; theme
+(require-package 'zenburn-theme)
+(load-theme 'zenburn)
+
+;; font
+(add-to-list 'default-frame-alist '(font . "Hack-12"))
+
+;; useless whitespace
+(setq-default indicate-empty-lines t)
+(setq-default show-trailing-whitespace t)
+
+;; mute echo
+(setq visible-bell t)
+
+;; always highlight parenthesis
+(show-paren-mode t)
+
+;; turn on column number
+(setq column-number-mode t)
+
+;;; end core editor setup
+
 ;;; text modes
 (add-hook 'markdown-mode-hook 'auto-fill-mode)
 (add-hook 'org-mode-hook 'auto-fill-mode)
 (add-hook 'text-mode-hook 'auto-fill-mode)
+
+(require 'flyspell)
+(setq ispell-program-name "aspell" ; use aspell instead of ispell
+      ispell-extra-args '("--sug-mode=ultra"))
+
+;; also copied from prelude
+(defun ta42-enable-flyspell ()
+  "Enable command `flyspell-mode'."
+  (flyspell-mode +1))
+
+
+(add-hook 'markdown-mode-hook 'ta42-enable-flyspell)
+(add-hook 'text-mode-hook 'ta42-enable-flyspell)
+(add-hook 'org-mode-hook 'ta42-enable-flyspell)
+;;; end text modes
 
 ;;; programming
 ;; javascript, typescript
@@ -110,26 +147,8 @@
 (add-hook 'yaml-mode-hook 'whitespace-mode)
 (add-hook 'yaml-mode-hook 'subword-mode)
 
-; font - set default font to droid sans mono
-(add-to-list 'default-frame-alist '(font . "Noto Mono-12"))
+;;; end programming
 
-; make zenburn the default:
-(load-theme 'zenburn)
-
-; indicate empty lines
-(setq-default indicate-empty-lines t)
-
-; Some shortcuts:
-(global-set-key (kbd "RET") 'newline-and-indent)
-
-; echo's and bells
-(setq visible-bell t)
-
-; always highlight parenthesis
-(show-paren-mode t)
-
-; turn on column number
-(setq column-number-mode t)
 
 ; turn on ido-mode
 (ido-mode t)
