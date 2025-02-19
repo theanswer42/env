@@ -1,0 +1,153 @@
+* 2025 update
+As I'm starting to prep to go to work again, looking into the emacs
+config again.
+
+The end goal will be python development with pyenv + pipenv +
+ruff-lsp + AI assist of some sort.
+
+** Config location
+Figured I'd start by understanding the config a bit. The rabbit hole
+can go as deep as you want it for pretty much everything.
+
+Looking at some references, people suggest using the path
+~.config/emacs/init.el~ as a more XDG compliant path for the config.
+
+*** XDG
+- https://specifications.freedesktop.org/basedir-spec/latest/
+- https://wiki.debian.org/XDGBaseDirectorySpecification
+
+Ok, the concept is simple enough, but for emacs it does not seem very
+clear where we are. While it does support reading the config from
+~.config/emacs/init.el~, it's not clear if this is the "right" way to
+do things... yet. Because ~.emacs.d~ has *many* things.
+This emacs bug report discusses them:
+https://debbugs.gnu.org/cgi/bugreport.cgi?bug=583
+
+Seems safer for now to stay in ~.emacs.d~.
+
+** custom.el
+At the start of ~init.el~ I have this:
+#+begin_src elisp
+  (setq custom-file "~/.emacs.d/custom.el")
+  (load custom-file)
+#+end_src
+
+So what counts as a customization and what is not? Let's ignore this
+question for now and as we start configuring things, we can figure out
+if they go in init or custom.
+
+** package handling
+At some point I copied a pattern from prelude and maybe not in a good
+way?
+I used to do this:
+#+begin_src elisp
+(defun require-package (package)
+  "Install PACKAGE unless already installed."
+  (unless (package-installed-p package)
+    (package-install package)))
+#+end_src
+
+But maybe I should just be using ~use-package~ ? That seems much more
+straightforward and easy to use.
+
+So to see how this works, I'm going to remove everything in my config
+except my basic editor setup. This does involve using one package (for
+the zenburn theme). I used to do it like this:
+#+begin_src elisp
+(require-package 'zenburn-theme)
+(load-theme 'zenburn)
+#+end_src
+
+Simple enough. I figured I can simply replace it with this:
+#+begin_src elisp
+  (use-package 'zenburn-theme
+    :ensure t
+    (load-theme 'zenburn))
+#+end_src
+The ~:ensure t~ is just telling use-package to install the package if
+it does not exist (this already raises one question - what exactly are
+the arguments to the ~use-package~ function here? what is ~:ensure~?
+Is this something implemented by ~use-package~?
+
+But before we get to that, this does not work... why? The error seems
+to indicate that the ~(load-theme 'zenburn)~ but is being used as an
+argument for ~:ensure~
+Looking at an internet example - this *does* work:
+#+begin_src elisp
+  (use-package 'zenburn-theme
+    :ensure t
+    :init
+    (load-theme 'zenburn))
+#+end_src
+
+In general I don't want to get too deep into this, so will keep this
+here for reference:
+https://github.com/jwiegley/use-package
+
+Also a lot of this explanation comes from Claude (gasp i know)
+Ok, so NOW I understand a bit more. Some notes:
+- use-package is a *macro* not a function call
+- It uses keywords to generate the code that will run. Some common
+  keywords are :ensure to ensure package installed. :init to run
+  things before the package is loaded and :config to run things after
+  a package is loaded. See reference above for MORE!
+
+Using the answer straight from Claude:
+
+When you call package-install, you need to quote 'zenburn-theme
+because package-install is a function that expects the package name as
+a symbol - if you didn't quote it, Emacs would try to evaluate
+zenburn-theme as a variable before passing it to the function.
+
+But use-package is a macro, and macros receive their arguments
+unevaluated. The macro then decides how to treat these symbols when it
+generates the actual code. In fact, use-package needs the raw symbol
+because it uses it in multiple ways:
+- As a package name for installation (where it will add the quote)
+- To check if the package is loaded
+- To generate variable names related to the package
+- And more
+
+* python
+This is more complicated than necessary, no? Or is it?
+
+Here's a resource. the author has used nix + direnv instead of
+pyenv/virtualenv/pyvenv
+https://github.com/purcell/emacs.d/blob/master/lisp/init-python.el
+
+I believe the key here is this:
+~(setq python-shell-interpreter "python3")~
+Aside from this, the other things seem pretty standard
+add-ons... maybe?
+
+this seems promising too:
+https://github.com/pythonic-emacs/pyenv-mode/blob/master/README.rst
+
+i like using projectile's project switch mechanism to change the venv
+
+
+
+* lsp-mode
+https://www.reddit.com/r/emacs/comments/1c0v28k/lspmode_vs_lspbridge_vs_lspce_vs_eglot/
+has lot's of information.
+But here's what I think I need to do:
+- figure out how to use and configure lsp-mode
+- use company-mode for completion
+
+
+* Some examples and docs
+
+- https://github.com/pprevos/emacs-writing-studio/blob/master/init.el
+- https://www.mgmarlow.com/words/2022-05-02-learning-emacs/
+
+
+Some useful things from here:
+https://www.kotaweaver.com/blog/emacs-python-lsp/
+
+like setting up the right env vars.
+* Modes to learn as I use them
+
+- Magit: https://magit.vc/manual/magit/index.html
+- Org-mode
+
+
