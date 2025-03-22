@@ -19,6 +19,8 @@
 ;; use-package
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
+;; Always install a package if not found
+(setq use-package-always-ensure t)
 
 ;;; end package management
 
@@ -57,33 +59,24 @@
 (setq column-number-mode t)
 
 ;; magit
-(use-package magit
-  :ensure t)
+(use-package magit)
 
 ;;; end core editor setup
 
 ;;; text modes
-;; markdown
-(use-package markdown-mode
-  :ensure t)
-
-;; auto-fill-mode (limit to 80 cols)
 (add-hook 'markdown-mode-hook 'auto-fill-mode)
 (add-hook 'org-mode-hook 'auto-fill-mode)
 (add-hook 'text-mode-hook 'auto-fill-mode)
 
 ;; Spell checking
+(require 'flyspell)
+(setq ispell-program-name "aspell" ; use aspell instead of ispell
+      ispell-extra-args '("--sug-mode=ultra"))
+
 ;; Note: copied from Prelude
 (defun ta42-enable-flyspell ()
   "Enable command `flyspell-mode'."
   (flyspell-mode +1))
-
-(use-package flyspell
-  :ensure t
-  :custom
-  (ispell-program-name "aspell")
-  (ispell-extra-args '("--sug-mode=ultra"))
-  :hook ((text-mode markdown-mode org-mode) . ta42-enable-flyspell))
 
 (add-hook 'markdown-mode-hook 'ta42-enable-flyspell)
 (add-hook 'text-mode-hook 'ta42-enable-flyspell)
@@ -101,14 +94,79 @@
 
 ;;; end prelude-to-programming
 
+;;; begin serialized
+(use-package yaml-mode
+  :ensure t)
+
+;;; end serialized
+
 ;;; begin programming
+
+;;; begin lsp things
+;; Company mode for completions
+(use-package company
+  :ensure t
+  :hook
+  (go-mode . company-mode)
+  (python-mode . company-mode)
+  :config
+  (setq company-idle-delay 0)
+  (setq company-minimum-prefix-length 1))
+
+
+;; LSP Mode for code intelligence
+(use-package lsp-mode
+  :ensure t
+  :commands (lsp lsp-deferred)
+  :hook
+  (go-mode . lsp-deferred)
+  (pipenv-mode . (lambda ()
+                   ;; Activate pipenv first
+                   (pipenv-activate)
+                   ;; Then start LSP
+                   (lsp-deferred)))
+  :config
+  (setq lsp-enable-file-watchers nil)
+  (setq lsp-gopls-staticcheck t)
+  (setq lsp-eldoc-render-all t)
+  (setq lsp-gopls-complete-unimported t)
+  :init
+  (setq lsp-keymap-prefix "C-c l"))
+
+
+;; Optional: For better UI
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode
+  :config
+  (setq lsp-ui-doc-enable t)
+  (setq lsp-ui-peek-enable t)
+  (setq lsp-ui-sideline-enable t)
+  (setq lsp-ui-sideline-show-diagnostics t))
+
+;;; end lsp things
+
+;;; project management
+;; Optional: For project management
 (use-package projectile
   :ensure t
-  :config
+  :init
   (projectile-mode +1)
-  )
+  :bind (:map projectile-mode-map
+              ("C-c p" . projectile-command-map)))
 
-;; pyenv
+;;; begin golang
+(use-package go-mode
+  :ensure t
+  :mode "\\.go\\'"
+  :hook (go-mode . lsp-deferred)
+  :config
+  (setq gofmt-command "goimports")
+  (add-hook 'before-save-hook 'gofmt-before-save))
+
+;;; end golang
+
+;;; begin python
 (use-package pyenv-mode
   :ensure t
   :hook (python-mode . pyenv-mode)
@@ -118,69 +176,28 @@
 
 (use-package pipenv
   :ensure t
-  :hook (python-mode . pipenv-mode)
+  :hook (pyenv-mode . pipenv-mode)
+  :config
+  (setq pipenv-with-projectile t)
   :custom
   (pipenv-projectile-after-switch-function #'pipenv-projectile-after-switch-extended))
 
-;; (use-package lsp-python-ms
-;;   :ensure t
-;;   :init (setq lsp-python-ms-auto-install-server t)
-;;   :hook (python-mode . (lambda ()
-;;                           (require 'lsp-python-ms)
-;;                           (lsp))))  ; or lsp-deferred
+(defun ta42-python-format-with-black ()
+  "Format the current buffer with black from the current pipenv environment."
+  (interactive)
+  (when (derived-mode-p 'python-mode)
+    (let ((file-path (buffer-file-name)))
+      (when file-path
+        (if (projectile-project-p)
+            (let ((default-directory (projectile-project-root)))
+              (message "Formatting %s with Black..." (file-name-nondirectory file-path))
+              (shell-command (format "pipenv run black %s" file-path))
+              (revert-buffer t t t))
+          (message "Not in a Projectile project"))))))
 
-;; yaml
-(use-package yaml-mode
-  :ensure t)
-
-;;; begin lsp things
-(use-package lsp-mode
-  :ensure t
-  :commands lsp
-  :custom
-  (lsp-keymap-prefix "C-c l")
-  (lsp-python-ms-python-executable-cmd "pipenv run python")
-  :hook
-  ((python-mode . lsp)))
-
-
-;; Optional but recommended: lsp-ui for fancy sideline, docs, etc.
-(use-package lsp-ui
-  :ensure t
-  :commands lsp-ui-mode
-  :custom
-  (lsp-ui-doc-position 'bottom)
-  (lsp-ui-doc-enable t)
-  (lsp-ui-sideline-enable t)
-  (lsp-ui-sideline-show-diagnostics t))
-
-;; Optional: for completion with lsp
-;; (use-package company-lsp
-;;   :ensure t
-;;   :after (lsp-mode company)
-;;   :config
-;;   (push 'company-lsp company-backends))
-
-;; ;; Optional: which-key integration (shows key binding hints)
-;; (use-package which-key
-;;   :ensure t
-;;   :config
-;;   (which-key-mode))
-
-;; company for completion
-(use-package company
-  :ensure t
-  :hook (prog-mode . company-mode)
-  :config
-  (setq company-idle-delay 0.4
-        company-minimum-prefix-length 4))
-
-(use-package company-quickhelp
-  :ensure t
-  :config
-  (add-hook 'company-mode-hook #'company-quickhelp-mode-enable-in-buffer))
-
-;;; end lsp things
+(add-hook 'python-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook #'ta42-python-format-with-black nil t)))
 
 ;;; begin terraform
 (use-package terraform-mode
@@ -196,6 +213,7 @@
   :config
   (company-terraform-init))
 ;;; end terraform
+
 
 ;;; end programming
 
