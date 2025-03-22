@@ -57,24 +57,33 @@
 (setq column-number-mode t)
 
 ;; magit
-(use-package magit)
+(use-package magit
+  :ensure t)
 
 ;;; end core editor setup
 
 ;;; text modes
+;; markdown
+(use-package markdown-mode
+  :ensure t)
+
+;; auto-fill-mode (limit to 80 cols)
 (add-hook 'markdown-mode-hook 'auto-fill-mode)
 (add-hook 'org-mode-hook 'auto-fill-mode)
 (add-hook 'text-mode-hook 'auto-fill-mode)
 
 ;; Spell checking
-(require 'flyspell)
-(setq ispell-program-name "aspell" ; use aspell instead of ispell
-      ispell-extra-args '("--sug-mode=ultra"))
-
 ;; Note: copied from Prelude
 (defun ta42-enable-flyspell ()
   "Enable command `flyspell-mode'."
   (flyspell-mode +1))
+
+(use-package flyspell
+  :ensure t
+  :custom
+  (ispell-program-name "aspell")
+  (ispell-extra-args '("--sug-mode=ultra"))
+  :hook ((text-mode markdown-mode org-mode) . ta42-enable-flyspell))
 
 (add-hook 'markdown-mode-hook 'ta42-enable-flyspell)
 (add-hook 'text-mode-hook 'ta42-enable-flyspell)
@@ -93,13 +102,100 @@
 ;;; end prelude-to-programming
 
 ;;; begin programming
+(use-package projectile
+  :ensure t
+  :config
+  (projectile-mode +1)
+  )
+
+;; pyenv
+(use-package pyenv-mode
+  :ensure t
+  :hook (python-mode . pyenv-mode)
+  :config
+  ;; Automatically switch to the correct pyenv version based on .python-version file
+  (pyenv-mode))
+
+(use-package pipenv
+  :ensure t
+  :hook (python-mode . pipenv-mode)
+  :custom
+  (pipenv-projectile-after-switch-function #'pipenv-projectile-after-switch-extended))
+
+;; (use-package lsp-python-ms
+;;   :ensure t
+;;   :init (setq lsp-python-ms-auto-install-server t)
+;;   :hook (python-mode . (lambda ()
+;;                           (require 'lsp-python-ms)
+;;                           (lsp))))  ; or lsp-deferred
+
+;; yaml
+(use-package yaml-mode
+  :ensure t)
 
 ;;; begin lsp things
-(use-package company-mode)
+(use-package lsp-mode
+  :ensure t
+  :commands lsp
+  :custom
+  (lsp-keymap-prefix "C-c l")
+  (lsp-python-ms-python-executable-cmd "pipenv run python")
+  :hook
+  ((python-mode . lsp)))
 
+
+;; Optional but recommended: lsp-ui for fancy sideline, docs, etc.
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode
+  :custom
+  (lsp-ui-doc-position 'bottom)
+  (lsp-ui-doc-enable t)
+  (lsp-ui-sideline-enable t)
+  (lsp-ui-sideline-show-diagnostics t))
+
+;; Optional: for completion with lsp
+;; (use-package company-lsp
+;;   :ensure t
+;;   :after (lsp-mode company)
+;;   :config
+;;   (push 'company-lsp company-backends))
+
+;; ;; Optional: which-key integration (shows key binding hints)
+;; (use-package which-key
+;;   :ensure t
+;;   :config
+;;   (which-key-mode))
+
+;; company for completion
+(use-package company
+  :ensure t
+  :hook (prog-mode . company-mode)
+  :config
+  (setq company-idle-delay 0.4
+        company-minimum-prefix-length 4))
+
+(use-package company-quickhelp
+  :ensure t
+  :config
+  (add-hook 'company-mode-hook #'company-quickhelp-mode-enable-in-buffer))
 
 ;;; end lsp things
 
+;;; begin terraform
+(use-package terraform-mode
+  :ensure t
+  :mode "\\.tf\\'"
+  :config
+  (add-hook 'terraform-mode-hook #'terraform-format-on-save-mode))
+
+;; Optional: Add company completion support for Terraform
+(use-package company-terraform
+  :ensure t
+  :after (terraform-mode company)
+  :config
+  (company-terraform-init))
+;;; end terraform
 
 ;;; end programming
 
