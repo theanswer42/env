@@ -195,9 +195,9 @@
               (revert-buffer t t t))
           (message "Not in a Projectile project"))))))
 
-(add-hook 'python-mode-hook
-          (lambda ()
-            (add-hook 'before-save-hook #'ta42-python-format-with-black nil t)))
+;; (add-hook 'python-mode-hook
+;;           (lambda ()
+;;             (add-hook 'before-save-hook #'ta42-python-format-with-black nil t)))
 
 ;;; begin terraform
 (use-package terraform-mode
