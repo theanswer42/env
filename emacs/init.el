@@ -191,7 +191,7 @@
         (if (projectile-project-p)
             (let ((default-directory (projectile-project-root)))
               (message "Formatting %s with Black..." (file-name-nondirectory file-path))
-              (shell-command (format "pipenv run black %s" file-path))
+              (shell-command (format "PIPENV_VERBOSITY=-1 pipenv run black %s >/dev/null 2>&1" file-path))
               (revert-buffer t t t))
           (message "Not in a Projectile project"))))))
 
