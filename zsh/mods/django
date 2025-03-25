@@ -1,0 +1,3 @@
+# Django helpers
+alias dsh="pipenv run python manage.py shell"
+alias dmig="pipenv run python manage.py migrate"
